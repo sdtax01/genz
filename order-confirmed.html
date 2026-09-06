@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order confirmed — GENZ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="logo shimmer-text">GENZ</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="cart.html" class="cart-link" aria-label="View cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="cart-count" hidden>0</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<main class="section container" style="text-align:center; padding-top:5rem; padding-bottom:6rem;">
+  <span class="tag-badge"><span class="dot"></span> <span id="status-label">Order placed</span></span>
+  <h1 style="font-size:clamp(2.2rem,5vw,3.2rem); margin-top:1rem;">Thanks for the order.</h1>
+  <p id="status-desc" style="margin:1rem auto 2rem;">We've got it — a confirmation will land in your inbox shortly.</p>
+  <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+    <a href="shop.html" class="btn btn-primary">Keep shopping</a>
+    <a href="https://wa.me/917030827708" target="_blank" rel="noopener" class="btn">Ask us anything</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> GENZ. All rights reserved.</span>
+      <span>Built for the drop.</span>
+    </div>
+  </div>
+</footer>
+
+<a class="whatsapp-fab" href="https://wa.me/917030827708" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+  <span class="fab-label">Chat with us</span>
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.004 2C6.478 2 2 6.477 2 12c0 1.85.505 3.583 1.383 5.07L2 22l5.06-1.362A9.955 9.955 0 0 0 12.004 22C17.53 22 22 17.523 22 12S17.53 2 12.004 2zm0 18.06a8.02 8.02 0 0 1-4.089-1.117l-.293-.174-3.006.809.807-2.943-.19-.302A8.02 8.02 0 1 1 20.02 12a8.03 8.03 0 0 1-8.016 8.06z"/></svg>
+</a>
+
+<script src="js/data.js"></script>
+<script src="js/shared.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const status = new URLSearchParams(window.location.search).get('status');
+  if (status === 'demo') {
+    document.getElementById('status-label').textContent = 'Demo order placed';
+    document.getElementById('status-desc').textContent = "This ran in demo mode since no live Razorpay key is configured yet — no payment was actually taken. Add your key in Admin → Settings to accept real payments.";
+  } else if (status === 'paid') {
+    document.getElementById('status-label').textContent = 'Payment successful';
+  }
+</script>
+</body>
+</html>

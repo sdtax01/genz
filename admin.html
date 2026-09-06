@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — GENZ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav container">
+    <a href="index.html" class="logo shimmer-text">GENZ</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="admin.html" class="active">Admin</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="cart.html" class="cart-link" aria-label="View cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="cart-count" hidden>0</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<!-- LOGIN -->
+<section class="login-screen" id="login-screen">
+  <div class="login-card">
+    <h1>Admin login</h1>
+    <p>Manage products, orders and store settings.</p>
+    <form id="login-form">
+      <div class="field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Log in</button>
+      <div class="login-error" id="login-error"></div>
+    </form>
+    <p class="hint">Default password is <code>admin123</code> — change it under Settings once you're in.</p>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="admin-shell" id="admin-shell" hidden>
+  <aside class="admin-sidebar">
+    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+    <button class="tab-btn" data-tab="products">Products</button>
+    <button class="tab-btn" data-tab="orders">Orders</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
+    <button class="logout-btn" id="logout-btn">Log out</button>
+  </aside>
+
+  <main class="admin-main">
+
+    <div class="tab-panel" id="tab-dashboard">
+      <div class="admin-header"><h2>Dashboard</h2></div>
+      <div class="stat-grid">
+        <div class="stat-card accent-1"><div class="label">Revenue</div><div class="value" id="stat-revenue">₹0</div></div>
+        <div class="stat-card accent-2"><div class="label">Orders</div><div class="value" id="stat-orders">0</div></div>
+        <div class="stat-card accent-3"><div class="label">Products</div><div class="value" id="stat-products">0</div></div>
+        <div class="stat-card"><div class="label">Low stock</div><div class="value" id="stat-lowstock">0</div></div>
+      </div>
+      <div class="admin-header"><h2 style="font-size:1.1rem;">Recent orders</h2></div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody id="recent-orders-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-products" hidden>
+      <div class="admin-header">
+        <h2>Products</h2>
+        <button class="btn btn-primary btn-sm" id="new-product-btn">Add product</button>
+      </div>
+
+      <div class="settings-card" id="product-form-card" hidden>
+        <h3 id="product-form-title">Add product</h3>
+        <div class="product-form-grid">
+          <div class="image-upload" id="image-upload-zone">
+            <div class="image-preview" id="image-preview">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            </div>
+            <span>Click to upload a product image (optional — a category icon is used otherwise)</span>
+            <input type="file" accept="image/*" id="product-image-input">
+          </div>
+          <div class="field"><label>Name</label><input type="text" id="pf-name" required></div>
+          <div class="field"><label>Category</label>
+            <select id="pf-category" required></select>
+          </div>
+          <div class="field"><label>Price (₹)</label><input type="number" id="pf-price" min="0" required></div>
+          <div class="field"><label>Stock</label><input type="number" id="pf-stock" min="0" required></div>
+          <div class="field" style="grid-column:1/-1;"><label>Description</label><textarea id="pf-description" rows="2"></textarea></div>
+        </div>
+        <div style="display:flex; gap:0.75rem; margin-top:0.5rem;">
+          <button class="btn btn-primary" id="save-product-btn">Save product</button>
+          <button class="btn btn-ghost" id="cancel-product-btn">Cancel</button>
+        </div>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+          <tbody id="products-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-orders" hidden>
+      <div class="admin-header"><h2>Orders</h2></div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody id="orders-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-settings" hidden>
+      <div class="admin-header"><h2>Settings</h2></div>
+
+      <div class="settings-card">
+        <h3>Store details</h3>
+        <p class="desc">Shown across the storefront — home page, nav, and footer.</p>
+        <div class="field"><label>Store name</label><input type="text" id="set-store-name"></div>
+        <div class="field"><label>WhatsApp number (with country code, digits only)</label><input type="text" id="set-whatsapp"></div>
+        <button class="btn btn-sm" id="save-store-btn">Save</button>
+      </div>
+
+      <div class="settings-card">
+        <h3>Razorpay</h3>
+        <p class="desc">Add your live Key ID to accept real payments. Until then, checkout runs in demo mode.</p>
+        <div class="settings-row">
+          <input type="text" class="key-display" id="set-razorpay" placeholder="rzp_live_xxxxxxxxxxxx" style="border-radius:4px;">
+          <button class="btn btn-sm" id="save-razorpay-btn">Save</button>
+        </div>
+        <p class="note-box" style="margin-top:1rem;">Never share your Razorpay <strong>Key Secret</strong> here or anywhere in this site's code — only the public Key ID belongs on the frontend.</p>
+      </div>
+
+      <div class="settings-card">
+        <h3>Discount code</h3>
+        <div class="product-form-grid">
+          <div class="field"><label>Code</label><input type="text" id="set-discount-code"></div>
+          <div class="field"><label>Discount %</label><input type="number" id="set-discount-percent" min="0" max="90"></div>
+        </div>
+        <button class="btn btn-sm" id="save-discount-btn">Save</button>
+      </div>
+
+      <div class="settings-card">
+        <h3>Admin password</h3>
+        <div class="field-row">
+          <div class="field"><label>New password</label><input type="password" id="set-new-password"></div>
+          <div class="field"><label>Confirm</label><input type="password" id="set-confirm-password"></div>
+        </div>
+        <button class="btn btn-sm" id="save-password-btn">Update password</button>
+      </div>
+    </div>
+
+  </main>
+</section>
+
+<script src="js/data.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
