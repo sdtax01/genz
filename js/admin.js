@@ -184,11 +184,35 @@
     }
   });
 
+  function toWhatsAppNumber(phone) {
+    const digits = (phone || '').replace(/\D/g, '');
+    if (!digits) return null;
+    if (digits.length === 10) return '91' + digits;
+    return digits;
+  }
+
+  function statusMessage(order, settings) {
+    const lines = {
+      pending: `Hi ${order.customerName || ''}, your order #${order.orderNumber} with ${settings.storeName} is confirmed and pending processing.`,
+      paid: `Hi ${order.customerName || ''}, payment received for order #${order.orderNumber}. We're getting it ready to ship!`,
+      demo: `Hi ${order.customerName || ''}, this is a test order #${order.orderNumber} from ${settings.storeName} (demo mode, no payment taken).`,
+      shipped: `Hi ${order.customerName || ''}, good news — your order #${order.orderNumber} has shipped! We'll let you know once it's delivered.`,
+      delivered: `Hi ${order.customerName || ''}, your order #${order.orderNumber} has been delivered. Thanks for shopping with ${settings.storeName}!`,
+      cancelled: `Hi ${order.customerName || ''}, your order #${order.orderNumber} has been cancelled. Reach out if you have any questions.`
+    };
+    const itemsLine = (order.items || []).map(i => `${i.name} ×${i.quantity}`).join(', ');
+    const base = lines[order.status] || `Hi ${order.customerName || ''}, update on your order #${order.orderNumber}: status is now "${order.status}".`;
+    return `${base}\n\nItems: ${itemsLine}\nTotal: ${Store.formatPrice(order.totalAmount)}`;
+  }
+
   // ---- Orders ----
   function renderOrders() {
     const orders = Store.getOrders();
+    const settings = Store.getSettings();
     const body = document.getElementById('orders-body');
-    body.innerHTML = orders.length ? orders.map(o => `
+    body.innerHTML = orders.length ? orders.map(o => {
+      const waNumber = toWhatsAppNumber(o.customerPhone);
+      return `
       <tr>
         <td>#${o.orderNumber}</td>
         <td>${o.customerName || '—'}<br><span style="font-size:0.78rem; color:var(--ink-soft);">${o.customerEmail || ''}</span></td>
@@ -199,9 +223,25 @@
             ${['pending', 'paid', 'demo', 'shipped', 'delivered', 'cancelled'].map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
           </select>
         </td>
+        <td>
+          <button class="btn btn-sm" data-share="${o.id}" ${waNumber ? '' : 'disabled title="No phone number on this order"'}>Share status</button>
+        </td>
       </tr>
-    `).join('') : `<tr><td colspan="5" style="text-align:center; color:var(--ink-soft);">No orders yet</td></tr>`;
+    `; }).join('') : `<tr><td colspan="6" style="text-align:center; color:var(--ink-soft);">No orders yet</td></tr>`;
   }
+
+  document.getElementById('orders-body').addEventListener('click', (e) => {
+    const shareBtn = e.target.closest('[data-share]');
+    if (shareBtn) {
+      const order = Store.getOrders().find(o => o.id === Number(shareBtn.dataset.share));
+      if (!order) return;
+      const waNumber = toWhatsAppNumber(order.customerPhone);
+      if (!waNumber) { Shared.showToast('No phone number on this order'); return; }
+      const settings = Store.getSettings();
+      const message = encodeURIComponent(statusMessage(order, settings));
+      window.open(`https://wa.me/${waNumber}?text=${message}`, '_blank', 'noopener');
+    }
+  });
 
   document.getElementById('orders-body').addEventListener('change', (e) => {
     const select = e.target.closest('[data-status]');
